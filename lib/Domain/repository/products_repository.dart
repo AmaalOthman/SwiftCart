@@ -1,7 +1,7 @@
 import 'package:ecommerce/Domain/entities/Product.dart';
 
 abstract class ProductsRepository {
-  Future<List<Product>?> getProducts(ProductSort sort);
+  Future<List<Product>?> getProducts({ProductSort? sort});
 }
 
 enum ProductSort{

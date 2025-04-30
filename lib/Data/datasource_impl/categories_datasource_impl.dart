@@ -13,7 +13,7 @@ class CategoriesDatasourceImpl extends CategoriesDataSource{
   @override
   Future<List<Category>?> getCategories() async{
     var response = await apiManager.getCategories();
-    return response.data.map((catDto) => CategoryDto.toCategory()).toList();
+    return response.data.map((categoryDto) => categoryDto.toCategory()).toList();
     
   }
 }

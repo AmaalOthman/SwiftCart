@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:ecommerce/Domain/entities/Brand.dart';
+import 'package:ecommerce/Domain/entities/Category.dart';
+
 class Product {
   int? sold;
   List<String>? images;
@@ -12,9 +17,9 @@ class Product {
   int? priceAfterDiscount;
   List<dynamic>? availableColors;
   String? imageCover;
-  Category? category;
-  Brand? brand;
-  double? ratingsAverage;
+  final Category? category;
+  final Brand? brand;
+  num? ratingsAverage;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -39,97 +44,63 @@ class Product {
      this.updatedAt,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
+factory Product.fromJson(Map<String, dynamic> json) {
+  try {
+    print('Raw JSON: ${jsonEncode(json)}'); // Log raw JSON
+
     return Product(
       sold: json['sold'],
-      images: List<String>.from(json['images']),
-      subcategory: List<Subcategory>.from(
-        json['subcategory'].map((x) => Subcategory.fromJson(x)),
-      ),
+      images: json['images'] != null ? List<String>.from(json['images']) : [],
+      subcategory: json['subcategory'] != null
+          ? List<Subcategory>.from(
+              json['subcategory'].map((x) => Subcategory.fromJson(x)))
+          : [],
       ratingsQuantity: json['ratingsQuantity'],
       id: json['_id'],
-      title: json['title'],
+      title: json['title'], // <-- Likely culprit if this is null
       slug: json['slug'],
       description: json['description'],
       quantity: json['quantity'],
       price: json['price'],
       priceAfterDiscount: json['priceAfterDiscount'],
-      availableColors: List<dynamic>.from(json['availableColors']),
+      availableColors: json['availableColors'] ?? [],
       imageCover: json['imageCover'],
-      category: Category.fromJson(json['category']),
-      brand: Brand.fromJson(json['brand']),
-      ratingsAverage: (json['ratingsAverage'] as num).toDouble(),
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      category: json['category'] != null ? Category.fromJson(json['category']) : null,
+      brand: json['brand'] != null ? Brand.fromJson(json['brand']) : null,
+      ratingsAverage: json['ratingsAverage']?.toDouble(),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );
+  } catch (e, stack) {
+    print('Failed to parse Product: $e');
+    print('Stack trace: $stack');
+    print('Faulty JSON: ${jsonEncode(json)}');
+    rethrow;
   }
 }
 
+}
+
 class Subcategory {
-  String id;
-  String name;
-  String slug;
-  String category;
+  String? id;
+  String? name;
+  String? slug;
+  String? category;
 
   Subcategory({
-    required this.id,
-    required this.name,
-    required this.slug,
-    required this.category,
+     this.id,
+     this.name,
+     this.slug,
+     this.category,
   });
 
   factory Subcategory.fromJson(Map<String, dynamic> json) {
     return Subcategory(
-      id: json['_id'],
-      name: json['name'],
-      slug: json['slug'],
-      category: json['category'],
+      id: json['_id']?.toString(),
+      name: json['name']?.toString(), // <-- Likely culprit if this is null
+      slug: json['slug']?.toString(),
+      category: json['category']?.toString(),
     );
   }
 }
 
-class Category {
-  String id;
-  String name;
-  String slug;
-  String image;
-
-  Category({
-    required this.id,
-    required this.name,
-    required this.slug,
-    required this.image,
-  });
-
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      id: json['_id'],
-      name: json['name'],
-      slug: json['slug'],
-      image: json['image'],
-    );
-  }
-}
-
-class Brand {
-  String id;
-  String name;
-  String slug;
-  String image;
-
-  Brand({
-    required this.id,
-    required this.name,
-    required this.slug,
-    required this.image,
-  });
-
-  factory Brand.fromJson(Map<String, dynamic> json) {
-    return Brand(
-      id: json['_id'],
-      name: json['name'],
-      slug: json['slug'],
-      image: json['image'],
-    );
-  }
-}

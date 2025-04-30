@@ -44,11 +44,22 @@ class BrandDto {
     return BrandDto(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
-      slug: json['slug'],
-      image: json['image'],
+      slug: json['slug'] ?? "",
+      image: json['image'] ?? "",
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );
+  }
+
+   Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'slug': slug,
+      'image': image,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
   }
 
   Brand toBrand() {
